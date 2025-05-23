@@ -7,14 +7,34 @@ use App\Models\Faktur;
 use App\Models\Partner;
 use App\Models\Software;
 use App\Models\AccountType;
+use App\Models\Bank;
 use App\Models\IdentityType;
 use Illuminate\Http\Request;
 use App\Models\PartnerCategory;
+use App\Models\Province;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class PartnerController extends Controller
 {
+    public function index()
+    {
+        $partners = Partner::with([
+            'partnerCategory',
+            'accountType',
+            'faktur',
+            'identityType',
+            'software',
+            'bank',
+            'crm',
+            'village',
+        ])->get();
+
+
+
+        return view('partner.index', compact('partners'));
+    }
+
     public function form()
     {
         $categories = PartnerCategory::all();
@@ -23,6 +43,9 @@ class PartnerController extends Controller
         $identityTypes = IdentityType::all();
         $softwares = Software::all();
         $crms = CRM::all();
+        $provinces =Province::all();
+        $banks = Bank::all();
+
 
         return view('partner.form', compact(
             'categories',
@@ -30,38 +53,37 @@ class PartnerController extends Controller
             'accountTypes',
             'fakturs',
             'identityTypes',
-            'softwares'
+            'banks',
+            'softwares',
+            'provinces'
         ));
     }
     public function store(Request $request)
     {
         try {
 
-            // dd($request->all());
         // Validate and store the data
         $validatedData = Validator::make($request->all(), [
             'partner_category_id' => 'required',
             'account_type_id' => 'required',
+            'faktur_id' => 'required',
             'company_name' => 'required|string|max:255',
             'office_address' => 'required|string',
-            'invoice_address' => 'required|string',
-            'city' => 'required|string|max:100',
-            'zip_code' => 'required|digits_between:3,10',
-            'province' => 'required|string|max:100',
-            'country' => 'required|string|max:100',
-            'faktur_id' => 'required',
+            'village_id' => 'required',
+
 
             // Step 2: Owner/Director Info
             'owner_name' => 'required|string|max:255',
             'identity_type_id' => 'required',
-            'identity_number' => 'required|string|max:100',
-            'owner_mobile' => 'required|numeric',
+            'identity_number' => 'required|string|min:16|max:25',
+            'owner_mobile' => 'required',
             'owner_email' => 'required|email|unique:partners|max:255',
 
             // Step 3: Financial / Tax Info
             'npwp' => 'nullable|string|max:50',
-            'bank_transfer' => 'nullable|string|max:100',
+            'bank_id' => 'nullable|integer',
             'bank_account_name' => 'nullable|string|max:100',
+            'invoice_address' => 'required|string',
 
             // Step 4: PIC Info
             // Finance
@@ -89,6 +111,7 @@ class PartnerController extends Controller
             'ip_address' => 'required|unique:partners|max:45',
             'url_callback' => 'required|max:255',
             'crm_id' => 'required',
+            'note' => 'nullable|string|max:255',
         ]);
 
         // $validatorData = $validator->validated();
@@ -109,14 +132,10 @@ class PartnerController extends Controller
         Partner::create([
             'partner_category_id' => $reqBody['partner_category_id'],
             'account_type_id' => $reqBody['account_type_id'],
+            'faktur_id' => $reqBody['faktur_id'],
             'company_name' => $reqBody['company_name'],
             'office_address' => $reqBody['office_address'],
-            'invoice_address' => $reqBody['invoice_address'],
-            'city' => $reqBody['city'],
-            'zip_code' => $reqBody['zip_code'],
-            'province' => $reqBody['province'],
-            'country' => $reqBody['country'],
-            'faktur_id' => $reqBody['faktur_id'],
+            'village_id' => $reqBody['village_id'],
 
             // Step 2: Owner/Director Info
             'owner_name' => $reqBody['owner_name'],
@@ -127,8 +146,9 @@ class PartnerController extends Controller
 
             // Step 3: Financial / Tax Info
             'npwp' => $reqBody['npwp'],
-            'bank_transfer' => $reqBody['bank_transfer'],
+            'bank_id' => $reqBody['bank_id'],
             'bank_account_name' => $reqBody['bank_account_name'],
+            'invoice_address' => $reqBody['invoice_address'],
 
             // Step 4: PIC Info
             'finance_name' => $reqBody['finance_name'],
@@ -154,6 +174,7 @@ class PartnerController extends Controller
             'ip_address' => $reqBody['ip_address'],
             'url_callback' => $reqBody['url_callback'],
             'crm_id' => $reqBody['crm_id'],
+            'note' => $reqBody['note'],
         ]);
 
 
@@ -166,7 +187,6 @@ class PartnerController extends Controller
             return redirect()->back()->with('error', 'Partner information saved failed!');
 
         }
-
 
     }
 }

@@ -11,14 +11,10 @@ class Partner extends Model
         // Company General Information
         'partner_category_id',
         'account_type_id',
+        'faktur_id',
         'company_name',
         'office_address',
         'invoice_address',
-        'city',
-        'zip_code',
-        'province',
-        'country',
-        'faktur_id',
         'owner_name',
         'identity_type_id',
         'identity_number',
@@ -27,6 +23,9 @@ class Partner extends Model
         'npwp',
         'bank_transfer',
         'bank_account_name',
+        'bank_id',
+        'village_id',
+
         // Finance
         'finance_name',
         'finance_mobile',
@@ -50,6 +49,44 @@ class Partner extends Model
         'software_id',
         'ip_address',
         'url_callback',
-        'crm_id'
+        'crm_id',
+        'note'
     ];
+
+    public function partnerCategory()
+    {
+        return $this->belongsTo(PartnerCategory::class);
+    }
+
+    public function accountType()
+    {
+        return $this->belongsTo(AccountType::class);
+    }
+    public function identityType()
+    {
+        return $this->belongsTo(IdentityType::class);
+    }
+    public function software()
+    {
+        return $this->belongsTo(Software::class);
+    }
+    public function crm()
+    {
+        return $this->belongsTo(Crm::class);
+    }
+
+    public function faktur()
+    {
+        return $this->belongsTo(Faktur::class);
+    }
+
+    public function bank()
+    {
+        return $this->belongsTo(Bank::class);
+    }
+
+    public function village()
+    {
+        return $this->belongsTo(Village::class);
+    }
 }

@@ -1,631 +1,763 @@
 <!DOCTYPE html>
-<html lang="id" class="dark">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Form Pendaftaran Partner</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.svg') }}" type="image/x-icon" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Geist"', "ui-sans-serif", "system-ui", "sans-serif"],
-                    },
-                },
-            },
-        };
-    </script>
+    <title>Form Partnership | Multimakmur</title>
 
-    <!-- Theme Preference -->
-    <script>
-        // Atur preferensi awal jika belum ada
-        if (
-            localStorage.getItem("theme") === null &&
-            window.matchMedia("(prefers-color-scheme: dark)").matches
-        ) {
-            localStorage.setItem("theme", "dark");
-        }
+    <!-- ========== All CSS files linkup ========= -->
+    <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/css/lineicons.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/css/materialdesignicons.min.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/css/fullcalendar.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}" />
 
-        // Apply theme saat load
-        if (localStorage.getItem("theme") === "dark") {
-            document.documentElement.classList.add("dark");
-        } else {
-            document.documentElement.classList.remove("dark");
-        }
-
-        function toggleDarkMode() {
-            const isDark = document.documentElement.classList.toggle("dark");
-            localStorage.setItem("theme", isDark ? "dark" : "light");
-            updateDarkIcon(isDark);
-        }
-
-        function updateDarkIcon(isDark) {
-            const iconContainer = document.getElementById("darkIcon");
-            iconContainer.innerHTML = isDark ?
-                `<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-zinc-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 3v1m0 16v1m8.485-8.485h1M3.515 12.515h1m13.435-6.364l.707.707M4.343 19.657l.707.707m13.435 0l-.707-.707M4.343 4.343l.707-.707M12 5a7 7 0 100 14 7 7 0 000-14z" />
-            </svg>` :
-                `<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-zinc-900 dark:text-zinc-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M21 12.79A9 9 0 1111.21 3a7 7 0 009.79 9.79z" />
-            </svg>`;
-        }
-
-        document.addEventListener("DOMContentLoaded", () => {
-            updateDarkIcon(document.documentElement.classList.contains("dark"));
-        });
-    </script>
 </head>
 
-<body
-    class="transition-colors duration-300 font-sans bg-zinc-50 dark:bg-zinc-950 min-h-screen flex items-center justify-center p-4 text-zinc-900 dark:text-zinc-100">
-
-    <div class="absolute top-4 inset-x-0 flex justify-center px-4 z-50">
-        @include('message')
+<body>
+    <!-- ======== Preloader =========== -->
+    <div id="preloader">
+        <div class="spinner"></div>
     </div>
-
-    <div class="absolute top-4 right-4 z-50">
-        <button onclick="toggleDarkMode()"
-            class="p-2 rounded-lg bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-300 dark:hover:bg-zinc-600 transition">
-            <span id="darkIcon"></span>
-        </button>
-    </div>
-
 
     {{-- Card Body --}}
-    <div
-        class="bg-white border border-zinc-100 dark:bg-zinc-900 dark:border-zinc-800 p-12 rounded-xl shadow-sm max-w-4xl w-full">
-        <h1
-            class="font-sans text-2xl font-bold leading-tight tracking-tighter sm:text-3xl md:text-4xl lg:leading-[1.1] text-center">
-            Form Pendaftaran Partner
-        </h1>
-        <div class="border-b border-zinc-300 dark:border-zinc-800 mb-6 mt-2"></div>
+    <div class="container min-vh-100 d-flex justify-content-center align-items-start py-5">
+        <div class="col-12 col-md-10 col-lg-8">
+            <div class="shadow p-4 p-md-5 rounded bg-white">
+                <h1 class="mb-3 text-center fs-3">Form Pendaftaran</h1>
+                <p class="text-muted mb-4 text-center">Pastikan semua informasi yang Anda berikan akurat dan lengkap.
+                </p>
+                <hr class="mb-4" />
 
-        <form method="post" action="{{ route('partner.store') }}" class="space-y-6">
-            @csrf
+                @include('layouts.message')
 
-            <!-- STEP 1 -->
-            <fieldset>
-                <legend class="font-sans mb-2 mt-4 text-base font-medium flex items-center space-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
-                    </svg>
-                    <span>Company General Information</span>
-                </legend>
+                <form action="{{ route('partner.store') }}" method="POST">
+                    @csrf
 
-                <div class="flex flex-col mt-4 md:flex-row gap-4">
-                    <!-- Partner Category -->
-                    <label for="partner_category_id" class="flex-1">
-                        <span class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2">
-                            Partner Category:</span>
-                        <select id="partner_category_id" name="partner_category_id" required
-                            class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none">
-                            <option value="">-- Pilih --</option>
-                            @foreach ($categories as $category)
-                                <option value="{{ $category->id }}"
-                                    {{ old('partner_category_id') == $category->id ? 'selected' : '' }}>
-                                    {{ $category->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('partner_category_id')
-                            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                        @enderror
-                    </label>
+                    <!-- Step 1 : Informasi Umum Perusahaan-->
+                    <h6 class="mb-3"><i class="mdi mdi-office-building-outline"></i> Informasi Umum Perusahaan</h6>
 
-                    <!-- Account Type -->
-                    <label for="account_type_id" class="flex-1">
-                        <span class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2">
-                            Account Type:</span>
-                        <select id="account_type_id" name="account_type_id" required
-                            class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none">
-                            <option value="">-- Pilih --</option>
-                            @foreach ($accountTypes as $accountType)
-                                <option value="{{ $accountType->id }}"
-                                    {{ old('account_type_id') == $category->id ? 'selected' : '' }}>
-                                    {{ $accountType->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('account_type_id')
-                            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                        @enderror
-                    </label>
-                </div>
+                    {{-- Group Kategori, Jenis Akun & Faktur --}}
+                    <div class="row g-3">
+                        <!-- Kategori -->
+                        <div class="col-md-4">
+                            <div class="select-style-1">
+                                <label for="partner_category_id">Kategori <span class="text-danger">*</span></label>
+                                <div class="select-position">
+                                    <select id="partner_category_id" class="form-select" name="partner_category_id"
+                                        required>
+                                        <option value="" {{ old('partner_category_id') ? '' : 'selected' }}>--
+                                            Pilih --</option>
+                                        @foreach ($categories as $category)
+                                            <option value="{{ $category->id }}"
+                                                {{ old('partner_category_id') == $category->id ? 'selected' : '' }}>
+                                                {{ $category->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Kategori End -->
 
+                        <!-- Jenis Akun -->
+                        <div class="col-md-4">
+                            <div class="select-style-1">
+                                <label for="account_type_id">Jenis Akun <span class="text-danger">*</span></label>
+                                <div class="select-position">
+                                    <select id="account_type_id" class="form-select" name="account_type_id" required>
+                                        <option value="" {{ old('account_type_id') ? '' : 'selected' }}>-- Pilih
+                                            --</option>
+                                        @foreach ($accountTypes as $accountType)
+                                            <option value="{{ $accountType->id }}"
+                                                {{ old('account_type_id') == $accountType->id ? 'selected' : '' }}>
+                                                {{ $accountType->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Jenis Akun End -->
 
-                <label class="font-sans block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">
-                    Company Name/Nama Perusahaan:
-                    <input type="text" name="company_name" value="{{ old('company_name') }}" required
-                        class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                    @error('company_name')
-                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                    @enderror
-                </label>
+                        <!-- Faktur -->
+                        <div class="col-md-4">
+                            <div class="select-style-1">
+                                <label for="faktur_id">Faktur <span class="text-danger">*</span></label>
+                                <div class="select-position">
+                                    <select id="faktur_id" class="form-select" name="faktur_id" required>
+                                        <option value="" {{ old('faktur_id') ? '' : 'selected' }}>-- Pilih --
+                                        </option>
+                                        @foreach ($fakturs as $faktur)
+                                            <option value="{{ $faktur->id }}"
+                                                {{ old('faktur_id') == $faktur->id ? 'selected' : '' }}>
+                                                {{ $faktur->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Faktur End -->
+                    </div>
+                    {{-- Group Kategori, Jenis Akun & Faktur End --}}
 
-                <label class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">
-                    Office Address:
-                    <textarea name="office_address" required
-                        class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none">{{ old('office_address') }}</textarea>
-                    @error('office_address')
-                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                    @enderror
-                </label>
-
-                <label class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">
-                    Invoice Address:
-                    <textarea name="invoice_address" required
-                        class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none">{{ old('invoice_address') }}</textarea>
-                    @error('invoice_address')
-                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                    @enderror
-                </label>
-
-                <div class="flex flex-col md:flex-row gap-8">
-                    <label class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">
-                        City:
-                        <input type="text" name="city" value="{{ old('city') }}" required
-                            class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                        @error('city')
-                            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                        @enderror
-                    </label>
-
-                    <label class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">
-                        Zip Code:
-                        <input type="number" name="zip_code" value="{{ old('zip_code') }}" required
-                            class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                        @error('zip_code')
-                            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                        @enderror
-                    </label>
-
-                    <label class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">
-                        Province:
-                        <input type="text" name="province" value="{{ old('province') }}" required
-                            class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                        @error('province')
-                            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                        @enderror
-                    </label>
-
-                    <label class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">
-                        Country:
-                        <input type="text" name="country" value="{{ old('country') }}" required
-                            class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                        @error('country')
-                            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                        @enderror
-                    </label>
-                </div>
-
-                <label class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">
-                    Faktur / Non-Faktur:
-                    <div class="flex flex-wrap gap-4">
-                        <label class="inline-flex items-center space-x-2">
-                            @foreach ($fakturs as $faktur)
-                                <input type="radio" name="faktur_id" value="{{ $faktur->id }}" required
-                                    class="text-blue-600 focus:ring-blue-500 border-zinc-300 dark:border-zinc-800 dark:bg-zinc-800 dark:checked:bg-blue-600">
-                                     {{ old('faktur_id') == $faktur->id ? 'checked' : '' }}
-                                <span class="text-zinc-700 dark:text-zinc-200">{{ $faktur->name }}</span>
-                            @endforeach
-                        </label>
-                        @error('faktur_id')
-                            <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+                    <!-- Nama Perusahaan -->
+                    <div class="input-style-2">
+                        <label for="company_name" class="form-label">Nama Perusahaan <span
+                                class="text-danger">*</span></label>
+                        <input type="text" name="company_name" id="company_name" value="{{ old('company_name') }}"
+                            class="form-control" placeholder="Nama Perusahaan" required />
+                        @error('company_name')
+                            <p class="text-danger mt-1">{{ $message }}</p>
                         @enderror
                     </div>
-                </label>
-            </fieldset>
-            <div class="border border-zinc-300 dark:border-zinc-800"></div>
 
-            <!-- STEP 2 -->
-            <fieldset>
-                <legend class="font-sans mb-2 mt-4 text-base font-medium flex items-center space-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                    </svg>
-                    <span>Owner/Director/CEO Name</span>
-                </legend>
-
-                <label class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">
-                    Name:
-                    <input type="text" name="owner_name" value="{{ old('owner_name') }}" required
-                        class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                    @error('owner_name')
-                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                    @enderror
-                </label>
-
-                <label class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">
-                    Identity Type:
-                    <select name="identity_type_id" required
-                        class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none">
-                        <option value="">-- Pilih --</option>
-                        @foreach ($identityTypes as $identity)
-                            <option value="{{ $identity->id }}"
-                                {{ old('identity_type_id') == $identity->id ? 'selected' : '' }}>{{ $identity->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('identity_type_id')
-                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                    @enderror
-                </label>
-
-                <label class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">
-                    Identity Number:
-                    <input type="text" name="identity_number" value="{{ old('identity_number') }}" required
-                        class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                    @error('identity_number')
-                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                    @enderror
-                </label>
-
-                <label class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">
-                    Mobile:
-                    <input type="tel" name="owner_mobile" value="{{ old('owner_mobile') }}" required
-                        class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                    @error('owner_mobile')
-                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                    @enderror
-                </label>
-
-                <label class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">
-                    Email:
-                    <input type="email" name="owner_email" value="{{ old('owner_email') }}" required
-                        class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                    @error('owner_email')
-                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                    @enderror
-                </label>
-            </fieldset>
-            <div class="border border-zinc-300 dark:border-zinc-800"></div>
-
-            <!-- STEP 3 -->
-            <fieldset>
-                <legend class="font-sans mb-2 mt-4 text-base font-medium flex items-center space-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
-                    </svg>
-                    <span>
-                        Corporate Financial / Tax Info
-                    </span>
-                </legend>
-
-                <label for="npwp" class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">
-                    No. NPWP:
-                    <input type="text" id="npwp" name="npwp" value="{{ old('npwp') }}"
-                        class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                    @error('npwp')
-                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                    @enderror
-                </label>
-
-                <label class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">
-                    Bank for Transfer:
-                    <input type="text" name="bank_transfer" value="{{ old('bank_transfer') }}"
-                        class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                    @error('bank_transfer')
-                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                    @enderror
-                </label>
-
-                <label class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">
-                    Bank Account Name:
-                    <input type="text" name="bank_account_name" value="{{ old('bank_account_name') }}"
-                        class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                    @error('bank_account_name')
-                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                    @enderror
-                </label>
-            </fieldset>
-            <div class="border border-zinc-300 dark:border-zinc-800"></div>
-
-            <!-- STEP 4 -->
-            <fieldset>
-                <legend class="font-sans mb-2 mt-4 text-base font-medium flex items-center space-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
-                    </svg>
-                    <span>Contact / PIC Partner Info</span>
-                </legend>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Finance Section -->
-                    <div>
-                        <legend class="font-sans mb-2 mt-4 text-base font-medium flex items-center space-x-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke-width="1.5" stroke="currentColor" class="size-6">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                            </svg>
-                            <span>Finance</span>
-                        </legend>
-
-                        <label for="finance_name"
-                            class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">Name:
-                            <input type="text" id="finance_name" name="finance_name"
-                                value="{{ old('finance_name') }}"
-                                class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                            @error('finance_name')
-                                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                            @enderror
-                        </label>
-
-                        <label for="finance_mobile"
-                            class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">Mobile:
-                            <input type="tel" id="finance_mobile" name="finance_mobile"
-                                class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                            @error('finance_mobile')
-                                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                            @enderror
-                        </label>
-
-                        <label for="finance_email"
-                            class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">Email:
-                            <input type="email" id="finance_email" name="finance_email"
-                                value="{{ old('finance_email') }}"
-                                class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                            @error('finance_email')
-                                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                            @enderror
-                        </label>
+                    <!-- Alamat Perusahaan -->
+                    <div class="input-style-2">
+                        <label for="office_address" class="form-label">Alamat Perusahaan <span
+                                class="text-danger">*</span></label>
+                        <textarea name="office_address" id="office_address" class="form-control" placeholder="Alamat Perusahaan" rows="3"
+                            required>{{ old('office_address') }}</textarea>
+                        @error('office_address')
+                            <p class="text-danger mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
 
-                    <!-- Business / Commercial Section -->
-                    <div>
-                        <legend class="font-sans mb-2 mt-4 text-base font-medium flex items-center space-x-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke-width="1.5" stroke="currentColor" class="size-6">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                            </svg>
-                            <span>Business / Commercial</span>
-                        </legend>
+                    <!-- Lokasi (Provinsi - Desa) -->
+                    <div class="row g-3">
+                        {{-- Provinsi --}}
+                        <div class="col-md-6">
+                            <div class="select-style-1">
+                                <label for="provinces_id" class="form-label">Provinsi <span
+                                        class="text-danger">*</span></label>
+                                <div class="select-position">
+                                    <select id="provinces_id" name="provinces_id" class="form-select" required>
+                                        <option value="" {{ old('provinces_id') ? '' : 'selected' }}>-- Pilih --
+                                        </option>
+                                        @foreach ($provinces as $province)
+                                            <option value="{{ $province->id }}"
+                                                {{ old('provinces_id') == $province->id ? 'selected' : '' }}>
+                                                {{ $province->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
 
-                        <label for="business_name"
-                            class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">Name:
-                            <input type="text" id="business_name" name="business_name"
-                                value="{{ old('business_name') }}"
-                                class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                            @error('business_name')
-                                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                            @enderror
-                        </label>
+                        {{-- Kabupaten --}}
+                        <div class="col-md-6">
+                            <div class="select-style-1">
+                                <label for="regency_id" class="form-label">Kabupaten <span
+                                        class="text-danger">*</span></label>
+                                <div class="select-position">
+                                    <select id="regency_id" name="regency_id" class="form-select" required>
+                                        <option value="" {{ old('regency_id') ? '' : 'selected' }}>-- Pilih --
+                                        </option>
+                                        @if (old('regency_id') && isset($regencies))
+                                            @foreach ($regencies as $regency)
+                                                <option value="{{ $regency->id }}"
+                                                    {{ old('regency_id') == $regency->id ? 'selected' : '' }}>
+                                                    {{ $regency->name }}
+                                                </option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
 
-                        <label for="business_mobile"
-                            class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">Mobile:
-                            <input type="tel" id="business_mobile"name="business_mobile"
-                                value="{{ old('business_mobile') }}"
-                                class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                            @error('business_mobile')
-                                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                            @enderror
-                        </label>
+                        {{-- Kecamatan --}}
+                        <div class="col-md-6">
+                            <div class="select-style-1">
+                                <label for="district_id" class="form-label">Kecamatan <span
+                                        class="text-danger">*</span></label>
+                                <div class="select-position">
+                                    <select id="district_id" name="district_id" class="form-select" required>
+                                        <option value="" {{ old('district_id') ? '' : 'selected' }}>-- Pilih --
+                                        </option>
+                                        @if (old('district_id') && isset($districts))
+                                            @foreach ($districts as $district)
+                                                <option value="{{ $district->id }}"
+                                                    {{ old('district_id') == $district->id ? 'selected' : '' }}>
+                                                    {{ $district->name }}
+                                                </option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
 
-                        <label for="business_email"
-                            class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">Email:
-                            <input type="email" id="business_email"name="business_email"
-                                value="{{ old('business_email') }}"
-                                class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                            @error('business_email')
-                                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                            @enderror
-                        </label>
-                    </div>
-                </div>
-
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Customer Service Section -->
-                    <div>
-                        <legend class="font-sans mb-2 mt-4 text-base font-medium flex items-center space-x-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke-width="1.5" stroke="currentColor" class="size-6">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                            </svg>
-                            <span>Customer Service</span>
-                        </legend>
-
-                        <label for="cs_name"
-                            class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">Name:
-                            <input type="text" id="cs_name" name="cs_name" required
-                                class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                        </label>
-
-                        <label for="cs_mobile"
-                            class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">Mobile:
-                            <input type="tel" id="cs_mobile"name="cs_mobile" value="{{ old('cs_mobile') }}"
-                                required
-                                class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                            @error('cs_mobile')
-                                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                            @enderror
-                        </label>
-
-                        <label for="cs_tm"
-                            class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">Telegram:
-                            <input type="tel" id="cs_tm"name="cs_tm" value="{{ old('cs_tm') }}"
-                                class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                            @error('cs_tm')
-                                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                            @enderror
-                        </label>
-
-                        <label for="cs_email"
-                            class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">Email:
-                            <input type="email" id="cs_email"name="cs_email" value="{{ old('cs_email') }}"
-                                class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                            @error('cs_email')
-                                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                            @enderror
-                        </label>
+                        {{-- Kel/Desa --}}
+                        <div class="col-md-6">
+                            <div class="select-style-1">
+                                <label for="village_id" class="form-label">Kelurahan/Desa <span
+                                        class="text-danger">*</span></label>
+                                <div class="select-position">
+                                    <select id="village_id" name="village_id" class="form-select" required>
+                                        <option value="" {{ old('village_id') ? '' : 'selected' }}>-- Pilih --
+                                        </option>
+                                        @if (old('village_id') && isset($villages))
+                                            @foreach ($villages as $village)
+                                                <option value="{{ $village->id }}"
+                                                    {{ old('village_id') == $village->id ? 'selected' : '' }}>
+                                                    {{ $village->name }}
+                                                </option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Technical Section -->
-                    <div>
-                        <legend class="font-sans mb-2 mt-4 text-base font-medium flex items-center space-x-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                                stroke-width="1.5" stroke="currentColor" class="size-6">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                            </svg>
-                            <span>Technical</span>
-                        </legend>
+                    <!-- Lokasi (Provinsi - Desa) End -->
 
-                        <label for="tech_name"
-                            class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">Name:
-                            <input type="text" id="tech_name" name="tech_name" value="{{ old('tech_name') }}"
-                                required
-                                class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                            @error('tech_name')
-                                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                            @enderror
-                        </label>
+                    <!-- Step 2 : Informasi Pemilik -->
+                    <h6 class="mb-3"><i class="mdi mdi-account-tie"></i> Pemilik Perusahaan</h6>
 
-                        <label for="tech_mobile"
-                            class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">Mobile:
-                            <input type="tel" id="tech_mobile"name="tech_mobile"
-                                value="{{ old('tech_mobile') }}" required
-                                class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                            @error('tech_mobile')
-                                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                            @enderror
-                        </label>
-
-                        <label for="tech_tm"
-                            class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">Telegram
-                            <input type="tel" id="tech_tm"name="tech_tm" value="{{ old('tech_tm') }}"
-                                class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                            @error('tech_tm')
-                                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                            @enderror
-                        </label>
-
-                        <label for="tech_email"
-                            class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">Email:
-                            <input type="email" id="tech_email"name="tech_email" value="{{ old('tech_email') }}"
-                                class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                            @error('tech_email')
-                                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                            @enderror
-                        </label>
+                    {{-- Nama Pemilik --}}
+                    <div class="input-style-2">
+                        <label for="owner_name" class="form-label">Nama Pemilik <span
+                                class="text-danger">*</span></label>
+                        <input type="text" name="owner_name" id="owner_name" value="{{ old('owner_name') }}"
+                            class="form-control" placeholder="Nama Pemilik" required />
+                        @error('owner_name')
+                            <p class="text-danger mt-1">{{ $message }}</p>
+                        @enderror
                     </div>
-                </div>
-                <div class="border border-zinc-300 dark:border-zinc-800 mt-4"></div>
+                    {{-- Nama Pemilik End --}}
+
+                    {{-- Group Jenis Identitas, No Identitas, Telp & Email --}}
+                    <div class="row g-3">
+                        {{-- Jenis Identitas --}}
+                        <div class="col-md-6">
+                            <div class="select-style-1">
+                                <label for="identity_type_id" class="form-label">Jenis Identitas <span
+                                        class="text-danger">*</span></label>
+                                <div class="select-position">
+                                    <select id="identity_type_id" name="identity_type_id" class="form-select"
+                                        required>
+                                        <option value="" {{ old('identity_type_id') ? '' : 'selected' }}>--
+                                            Pilih --</option>
+                                        @foreach ($identityTypes as $identityType)
+                                            <option value="{{ $identityType->id }}"
+                                                {{ old('identity_type_id') == $identityType->id ? 'selected' : '' }}>
+                                                {{ $identityType->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        {{-- Jenis Identitas End --}}
 
 
-                <legend class="font-sans mb-2 mt-4 text-base font-medium flex items-center space-x-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v10.5a2.25 2.25 0 0 0 2.25 2.25Zm.75-12h9v9h-9v-9Z" />
-                    </svg>
-                    <span>Technical Info</span>
-                </legend>
+                        {{-- Nomor Identitas --}}
+                        <div class="col-md-6">
+                            <div class="input-style-1">
+                                <label for="identity_number" class="form-label">Nomor Identitas <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" name="identity_number" id="identity_number"
+                                    value="{{ old('identity_number') }}" class="form-control"
+                                    placeholder="Nomor Identitas" required />
+                                @error('identity_number')
+                                    <p class="text-danger mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                        {{-- Nomor Identitas End --}}
+
+                        {{-- Nomor Telp --}}
+                        <div class="col-md-6">
+                            <div class="input-style-1">
+                                <label for="owner_mobile" class="form-label">Nomor Telp <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" name="owner_mobile" id="owner_mobile"
+                                    value="{{ old('owner_mobile') }}" class="form-control" placeholder="Nomor Telp"
+                                    required />
+                                @error('owner_mobile')
+                                    <p class="text-danger mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                        {{-- Nomor Telp End --}}
+
+                        {{-- Nomor Email --}}
+                        <div class="col-md-6">
+                            <div class="input-style-1">
+                                <label for="owner_email" class="form-label">Nomor Email <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" name="owner_email" id="owner_email"
+                                    value="{{ old('owner_email') }}" class="form-control" placeholder="Nomor Email"
+                                    required />
+                                @error('owner_email')
+                                    <p class="text-danger mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                        {{-- Nomor Email End --}}
+
+                    </div>
+                    {{-- Group Jenis Identitas, No Identitas, Telp & Email End --}}
+
+                    <!-- Step 3 : Informasi Pajak -->
+                    <h6 class="mb-3"><i class="mdi mdi-file-percent-outline"></i> Informasi Pajak</h6>
+
+                    {{-- Group NPWP & BANK --}}
+                    <div class="row g-3">
+                        {{-- NPWP --}}
+                        <div class="col-md-6">
+                            <div class="input-style-1">
+                                <label for="npwp" class="form-label">NPWP <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" name="npwp" id="npwp" value="{{ old('npwp') }}"
+                                    class="form-control" placeholder="NPWP" required />
+                                @error('npwp')
+                                    <p class="text-danger mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                        {{-- NPWP End --}}
+
+                        {{-- BANK --}}
+                        <div class="col-md-6">
+                            <div class="select-style-1">
+                                <label for="bank_id" class="form-label">BANK <span
+                                        class="text-danger">*</span></label>
+                                <div class="select-position">
+                                    <select id="bank_id" name="bank_id" class="form-select" required>
+                                        <option value="" {{ old('bank_id') ? '' : 'selected' }}>-- Pilih --
+                                        </option>
+                                        @foreach ($banks as $bank)
+                                            <option value="{{ $bank->id }}"
+                                                {{ old('bank_id') == $bank->id ? 'selected' : '' }}>
+                                                {{ $bank->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        {{-- BANK End --}}
+                    </div>
+                    {{-- Group NPWP & BANK End --}}
+
+                    <!-- Atas Nama -->
+                    <div class="input-style-2">
+                        <label for="bank_account_name" class="form-label">Atas Nama <span
+                                class="text-danger">*</span></label>
+                        <input type="text" name="bank_account_name" id="bank_account_name"
+                            value="{{ old('bank_account_name') }}" class="form-control" placeholder="Atas Nama"
+                            required />
+                        @error('bank_account_name')
+                            <p class="text-danger mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Alamat Faktur -->
+                    <div class="input-style-2">
+                        <label for="invoice_address" class="form-label">Alamat Faktur <span
+                                class="text-danger">*</span></label>
+                        <textarea name="invoice_address" id="invoice_address" class="form-control" placeholder="Alamat Faktur"
+                            rows="3" required>{{ old('invoice_address') }}</textarea>
+                        @error('invoice_address')
+                            <p class="text-danger mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Step 4 : Kontak / PIC -->
+                    <h6 class="mb-3"><i class="mdi mdi-badge-account-alert"></i> Kontak / Penanggung Jawab</h6>
+
+                    <div class="row g-3">
+                        {{-- Keuangan --}}
+                        <div class="col-md-6">
+                            <div class="input-style-3">
+                                <label for="finance_name" class="form-label">Keuangan</label>
+                                <div class="input-style-3 position-relative">
+                                    <input type="text" name="finance_name" id="finance_name"
+                                        value="{{ old('finance_name') }}" class="form-control ps-5"
+                                        placeholder="Nama" />
+                                    <span class="position-absolute top-50 start-0 translate-middle-y ps-3 text-muted">
+                                        <i class="lni lni-user"></i>
+                                    </span>
+                                    @error('finance_name')
+                                        <p class="text-danger mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div class="input-style-3 position-relative">
+                                    <input type="tel" name="finance_mobile" id="finance_mobile"
+                                        value="{{ old('finance_mobile') }}" class="form-control ps-5"
+                                        placeholder="No. HP" />
+                                    <span class="position-absolute top-50 start-0 translate-middle-y ps-3 text-muted">
+                                        <i class="lni lni-phone"></i>
+                                    </span>
+                                    @error('finance_mobile')
+                                        <p class="text-danger mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div class="input-style-3 position-relative">
+                                    <input type="email" name="finance_email" id="finance_email"
+                                        value="{{ old('finance_email') }}" class="form-control ps-5"
+                                        placeholder="Email" />
+                                    <span class="position-absolute top-50 start-0 translate-middle-y ps-3 text-muted">
+                                        <i class="lni lni-envelope"></i>
+                                    </span>
+                                    @error('finance_email')
+                                        <p class="text-danger mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                            </div>
+                        </div>
+                        {{-- Keuangan End --}}
+
+                        {{-- Bisnis --}}
+                        <div class="col-md-6">
+                            <div class="input-style-3">
+                                <label for="business_name" class="form-label">Bisnis</label>
+                                <div class="input-style-3 position-relative">
+                                    <input type="text" name="business_name" id="business_name"
+                                        value="{{ old('business_name') }}" class="form-control ps-5"
+                                        placeholder="Nama" />
+                                    <span class="position-absolute top-50 start-0 translate-middle-y ps-3 text-muted">
+                                        <i class="lni lni-user"></i>
+                                    </span>
+                                    @error('business_name')
+                                        <p class="text-danger mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div class="input-style-3 position-relative">
+                                    <input type="tel" name="business_mobile" id="business_mobile"
+                                        value="{{ old('business_mobile') }}" class="form-control ps-5"
+                                        placeholder="No. HP" />
+                                    <span class="position-absolute top-50 start-0 translate-middle-y ps-3 text-muted">
+                                        <i class="lni lni-phone"></i>
+                                    </span>
+                                    @error('business_mobile')
+                                        <p class="text-danger mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div class="input-style-3 position-relative">
+                                    <input type="email" name="business_email" id="business_email"
+                                        value="{{ old('business_email') }}" class="form-control ps-5"
+                                        placeholder="Email" />
+                                    <span class="position-absolute top-50 start-0 translate-middle-y ps-3 text-muted">
+                                        <i class="lni lni-envelope"></i>
+                                    </span>
+                                    @error('business_email')
+                                        <p class="text-danger mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                            </div>
+                        </div>
+                        {{-- Bisnis End --}}
+                    </div>
 
 
-                <label for="software_id" class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">
-                    Type Software/System:
-                    <select id="software_id" name="software_id" required
-                        class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none">
-                        <option value="">-- Pilih --</option>
-                        @foreach ($softwares as $software)
-                            <option value="{{ $software->id }}"
-                                {{ old('software_id') == $software->id ? 'selected' : '' }}>{{ $software->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('software_id')
-                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                    @enderror
-                </label>
+                    {{-- Group Keuangan, Bisnis, Customer Service & Teknis --}}
+                    <div class="row g-3">
+                        {{-- Customer Service --}}
+                        <div class="col-md-6">
+                            <div class="input-style-3">
+                                <label for="cs_name" class="form-label">Customer Service<span
+                                        class="text-danger">*</span></label>
+                                <div class="input-style-3 position-relative">
+                                    <input type="text" name="cs_name" id="cs_name"
+                                        value="{{ old('cs_name') }}" class="form-control ps-5" placeholder="Nama"
+                                        required />
+                                    <span class="position-absolute top-50 start-0 translate-middle-y ps-3 text-muted">
+                                        <i class="lni lni-user"></i>
+                                    </span>
+                                    @error('cs_name')
+                                        <p class="text-danger mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
 
-                <label for="ip_address" class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">IP
-                    Address:
-                    <input type="text" id="ip_address" name="ip_address" value="{{ old('ip_address') }}"
-                        required
-                        class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                    @error('ip_address')
-                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                    @enderror
-                </label>
+                                <div class="input-style-3 position-relative">
+                                    <input type="tel" name="cs_mobile" id="cs_mobile"
+                                        value="{{ old('cs_mobile') }}" class="form-control ps-5"
+                                        placeholder="No. WhatsApp" required />
+                                    <span class="position-absolute top-50 start-0 translate-middle-y ps-3 text-muted">
+                                        <i class="lni lni-whatsapp"></i>
+                                    </span>
+                                    @error('cs_mobile')
+                                        <p class="text-danger mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
 
-                <label for="url_callback" class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">
-                    URL Callback:
-                    <input type="text" id="url_callback" name="url_callback" value="{{ old('url_callback') }}"
-                        required
-                        class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none" />
-                    @error('url_callback')
-                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                    @enderror
-                </label>
+                                <div class="input-style-3 position-relative">
+                                    <input type="tel" name="cs_tm" id="cs_tm" value="{{ old('cs_tm') }}"
+                                        class="form-control ps-5" placeholder="Username Telegram " />
+                                    <span class="position-absolute top-50 start-0 translate-middle-y ps-3 text-muted">
+                                        <i class="lni lni-telegram"></i>
+                                    </span>
+                                    @error('cs_tm')
+                                        <p class="text-danger mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div class="input-style-3 position-relative">
+                                    <input type="email" name="cs_email" id="cs_email"
+                                        value="{{ old('cs_email') }}" class="form-control ps-5"
+                                        placeholder="Email" />
+                                    <span class="position-absolute top-50 start-0 translate-middle-y ps-3 text-muted">
+                                        <i class="lni lni-envelope"></i>
+                                    </span>
+                                    @error('cs_email')
+                                        <p class="text-danger mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                            </div>
+                        </div>
+                        {{-- Customer Service End --}}
+
+                        {{-- Teknis --}}
+                        <div class="col-md-6">
+                            <div class="input-style-3">
+                                <label for="tech_name" class="form-label">Teknis<span
+                                        class="text-danger">*</span></label>
+                                <div class="input-style-3 position-relative">
+                                    <input type="text" name="tech_name" id="tech_name"
+                                        value="{{ old('tech_name') }}" class="form-control ps-5" placeholder="Nama"
+                                        required />
+                                    <span class="position-absolute top-50 start-0 translate-middle-y ps-3 text-muted">
+                                        <i class="lni lni-user"></i>
+                                    </span>
+                                    @error('tech_name')
+                                        <p class="text-danger mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div class="input-style-3 position-relative">
+                                    <input type="tel" name="tech_mobile" id="tech_mobile"
+                                        value="{{ old('tech_mobile') }}" class="form-control ps-5"
+                                        placeholder="No. WhatsApp" required />
+                                    <span class="position-absolute top-50 start-0 translate-middle-y ps-3 text-muted">
+                                        <i class="lni lni-whatsapp"></i>
+                                    </span>
+                                    @error('tech_mobile')
+                                        <p class="text-danger mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div class="input-style-3 position-relative">
+                                    <input type="tel" name="tech_tm" id="tech_tm"
+                                        value="{{ old('tech_tm') }}" class="form-control ps-5"
+                                        placeholder="Username Telegram" />
+                                    <span class="position-absolute top-50 start-0 translate-middle-y ps-3 text-muted">
+                                        <i class="lni lni-telegram"></i>
+                                    </span>
+                                    @error('tech_tm')
+                                        <p class="text-danger mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div class="input-style-3 position-relative">
+                                    <input type="email" name="tech_email" id="tech_email"
+                                        value="{{ old('tech_email') }}" class="form-control ps-5"
+                                        placeholder="Email" required />
+                                    <span class="position-absolute top-50 start-0 translate-middle-y ps-3 text-muted">
+                                        <i class="lni lni-envelope"></i>
+                                    </span>
+                                    @error('tech_email')
+                                        <p class="text-danger mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                            </div>
+                        </div>
+                        {{-- Teknis End --}}
+                    </div>
+                    {{-- Group Keuangan, Bisnis, Customer Service & Teknis End --}}
+
+                    <!-- Step 4 : System / Software -->
+                    <h6 class="mb-3"><i class="mdi mdi-database-cog"></i> System / Software</h6>
+
+                    {{-- Group Software & IP Addres --}}
+                    <div class="row g-3">
+                        {{-- Software --}}
+                        <div class="col-md-6">
+                            <div class="select-style-1">
+                                <label for="software_id" class="form-label">Software <span
+                                        class="text-danger">*</span></label>
+                                <div class="select-position">
+                                    <select id="software_id" name="software_id" class="form-select" required>
+                                        <option value="" {{ old('software_id') ? '' : 'selected' }}>-- Pilih --
+                                        </option>
+                                        @foreach ($softwares as $software)
+                                            <option value="{{ $software->id }}"
+                                                {{ old('software_id') == $software->id ? 'selected' : '' }}>
+                                                {{ $software->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        {{-- Software End --}}
 
 
-                <label for="crm_id"
-                    class="block text-sm font-sm text-zinc-700 dark:text-zinc-200 mb-2 mt-4">Reference:
-                    <select name="crm_id" required
-                        class="mt-2 block w-full border border-zinc-300 rounded-lg p-2 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white focus:border-zinc-600 focus:outline-none">
-                        <option value="">-- Pilih --</option>
-                        @foreach ($crms as $crm)
-                            <option value="{{ $crm->id }}" {{ old('crm_id') == $crm->id ? 'selected' : '' }}>
-                                {{ $crm->name }}</option>
-                        @endforeach
-                    </select>
-                    @error('crm_id')
-                        <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
-                    @enderror
-                </label>
-            </fieldset>
+                        {{-- IP Address --}}
+                        <div class="col-md-6">
+                            <div class="input-style-1">
+                                <label for="ip_address" class="form-label">IP Address <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" name="ip_address" id="ip_address"
+                                    value="{{ old('ip_address') }}" class="form-control" placeholder="IP Address"
+                                    required />
+                                @error('ip_address')
+                                    <p class="text-danger mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                        {{-- IP Address End --}}
+                    </div>
 
-            <div class="flex justify-end gap-4 mt-8">
-                <button type="reset"
-                    class="inline-flex items-center gap-2 text-sm font-medium px-4 py-2
-                    border border-zinc-300 bg-zinc-100 text-zinc-900 rounded-lg
-                    hover:bg-zinc-200 transition
-                    dark:border-zinc-600 dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800"
-                    <!-- Heroicon: X Mark -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                    Reset
-                </button>
+                    {{-- Group Software & IP Addres End --}}
 
-                <button type="submit"
-                    class="inline-flex items-center gap-2 text-sm font-medium px-4 py-2
-                    border border-zinc-300 bg-zinc-900 text-zinc-100 rounded-lg hover:bg-zinc-800 transition
-                    dark:border-zinc-600 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 transition">
-                    <!-- Heroicon: Paper Airplane -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 rotate-45" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                    </svg>
-                    Submit
-                </button>
+                    <!-- URL Callback / Report -->
+                    <div class="input-style-2">
+                        <label for="url_callback" class="form-label">URL Callback / Report <span
+                                class="text-danger">*</span></label>
+                        <input type="text" name="url_callback" id="url_callback"
+                            value="{{ old('url_callback') }}" class="form-control"
+                            placeholder="URL Callback / Report" required />
+                        @error('url_callback')
+                            <p class="text-danger mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Marketing --}}
+                    <div class="select-style-1">
+                        <label for="crm_id" class="form-label">Marketing <span class="text-danger">*</span></label>
+                        <div class="select-position">
+                            <select id="crm_id" name="crm_id" class="form-select" required>
+                                <option value="" {{ old('crm_id') ? '' : 'selected' }}>-- Pilih --</option>
+                                @foreach ($crms as $crm)
+                                    <option value="{{ $crm->id }}"
+                                        {{ old('crm_id') == $crm->id ? 'selected' : '' }}>
+                                        {{ $crm->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </div>
+
+                    {{-- Marketing End --}}
 
 
+
+                    <!-- Catatan -->
+                    <div class="input-style-2">
+                        <label for="note" class="form-label">Catatan</label>
+                        <textarea name="note" id="note" class="form-control" placeholder="Masukan Catatan / Keterangan Apabila Ada."
+                            rows="3">{{ old('note') }}</textarea>
+                        @error('note')
+                            <p class="text-danger mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+
+
+
+                    <!-- Tombol -->
+                    <div class="d-flex justify-content-end gap-2 mt-4">
+                        <button type="reset" class="btn btn-outline-danger">
+                            <i class="mdi mdi-close-thick"></i> Reset
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="mdi mdi-send"></i> Submit
+                        </button>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 
+    {{-- Card Body End --}}
+
+
+
+
+    <!-- ========= All Javascript files linkup ======== -->
+    <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('assets/js/Chart.min.js') }}"></script>
+    <script src="{{ asset('assets/js/dynamic-pie-chart.js') }}"></script>
+    <script src="{{ asset('assets/js/moment.min.js') }}"></script>
+    <script src="{{ asset('assets/js/fullcalendar.js') }}"></script>
+    <script src="{{ asset('assets/js/jvectormap.min.js') }}"></script>
+    <script src="{{ asset('assets/js/world-merc.js') }}"></script>
+    <script src="{{ asset('assets/js/polyfill.js') }}"></script>
+    <script src="{{ asset('assets/js/main.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+    <script>
+        $(document).ready(function() {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            // Provinsi -> Kabupaten
+            $('#provinces_id').on('change', function() {
+                const provinces_id = $(this).val();
+
+                $.post('{{ route('getRegency') }}', {
+                    provinces_id
+                }, function(response) {
+                    $('#regency_id').html(response);
+                    $('#district_id').html('<option value="">-- Pilih --</option>');
+                    $('#village_id').html('<option value="">-- Pilih --</option>');
+                }).fail(function() {
+                    alert('Gagal memuat data kabupaten.');
+                });
+            });
+
+            // Kabupaten -> Kecamatan
+            $('#regency_id').on('change', function() {
+                const regency_id = $(this).val();
+
+                $.post('{{ route('getDistrict') }}', {
+                    regency_id
+                }, function(response) {
+                    $('#district_id').html(response);
+                    $('#village_id').html('<option value="">-- Pilih --</option>');
+                }).fail(function() {
+                    alert('Gagal memuat data kecamatan.');
+                });
+            });
+
+            // Kecamatan -> Desa
+            $('#district_id').on('change', function() {
+                const district_id = $(this).val();
+
+                $.post('{{ route('getVillage') }}', {
+                    district_id
+                }, function(response) {
+                    $('#village_id').html(response);
+                }).fail(function() {
+                    alert('Gagal memuat data desa.');
+                });
+            });
+        });
+    </script>
 </body>
 
 </html>
